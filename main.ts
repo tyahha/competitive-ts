@@ -3,16 +3,25 @@ import { readFileSync } from "fs";
 const input = readFileSync("/dev/stdin", "utf-8");
 const [_, line2, ...lrs] = input.split("\n");
 const as = line2!.split(" ").map(Number);
-const [sums, __] = as.reduce<[number[], number]>(
-  ([acc, sum], a) => {
-    acc.push(sum + a);
-    return [acc, sum + a];
+const [sums, __] = as.reduce<[[number, number][], [number, number]]>(
+  ([acc, [wins, looses]], a) => {
+    if (a === 1) {
+      wins++;
+    } else {
+      looses++;
+    }
+    acc.push([wins, looses]);
+    return [acc, [wins, looses]];
   },
-  [[], 0]
+  [[[0, 0]], [0, 0]]
 );
 const n = as.length;
 lrs.forEach((lr) => {
   const [l, r] = lr.split(" ").map(Number);
   if (!l || !r) return;
-  console.log(sums[r! - 1]! - (sums[l! - 2] || 0));
+  const [pw, pl] = sums[r!]!;
+  const [qw, ql] = sums[l - 1]!;
+  const wins = pw - qw;
+  const looses = pl - ql;
+  console.log(wins > looses ? "win" : wins < looses ? "lose" : "draw");
 });
