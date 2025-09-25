@@ -1,17 +1,37 @@
 import { readFileSync } from "fs";
 
-const input = readFileSync("/dev/stdin", "utf-8");
-const [line1, line2, ...lrs] = input.split("\n");
-const t = Number(line1);
-const n = Number(line2);
-const aa = Array(t).fill(0);
-for (let i = 0; i < n; i++) {
-  const [l, r] = lrs![i]!.split(" ").map(Number);
-  aa[l!]++;
-  aa[r!]--;
+const getLine = (() => {
+  const input = readFileSync("/dev/stdin", "utf-8");
+  const lines = input.split(/\r?\n/);
+  let idx = 0;
+  return () => lines[idx++];
+})();
+
+const [h, w] = getLine().split(" ").map(Number);
+const m: number[][] = [];
+for (let i = 0; i < h; i++) {
+  m.push(getLine().split(" ").map(Number));
 }
-let count = 0;
-for (let i = 0; i < t; i++) {
-  count += aa[i]!;
-  console.log(count);
+for (let i = 0; i < h; i++) {
+  for (let j = 0; j < w; j++) {
+    const prev = m[i][j - 1] ?? 0;
+    m[i][j] += prev;
+  }
+}
+for (let j = 0; j < w; j++) {
+  for (let i = 0; i < h; i++) {
+    const prev = m[i - 1]?.[j] ?? 0;
+    m[i][j] += prev;
+  }
+}
+const q = Number(getLine());
+for (let i = 0; i < q; i++) {
+  const [a, b, c, d] = getLine()
+    .split(" ")
+    .map((x) => Number(x) - 1);
+  const total = m[c][d];
+  const left = m[c][b - 1] ?? 0;
+  const up = m[a - 1]?.[d] ?? 0;
+  const corner = m[a - 1]?.[b - 1] ?? 0;
+  console.log(total - left - up + corner);
 }
