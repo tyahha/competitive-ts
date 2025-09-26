@@ -7,31 +7,31 @@ const getLine = (() => {
   return () => lines[idx++];
 })();
 
-const [h, w] = getLine().split(" ").map(Number);
-const m: number[][] = [];
-for (let i = 0; i < h; i++) {
-  m.push(getLine().split(" ").map(Number));
+const [h, w, n] = getLine().split(" ").map(Number);
+const m: number[][] = Array(h + 1)
+  .fill(0)
+  .map(() => Array(w + 1).fill(0));
+
+for (let i = 0; i < n; i++) {
+  const [a, b, c, d] = getLine().split(" ").map(Number);
+  m[a - 1][b - 1] += 1;
+  m[c][d] += 1;
+  m[a - 1][d] -= 1;
+  m[c][b - 1] -= 1;
 }
+
 for (let i = 0; i < h; i++) {
   for (let j = 0; j < w; j++) {
-    const prev = m[i][j - 1] ?? 0;
-    m[i][j] += prev;
+    m[i][j + 1] += m[i][j];
   }
 }
+
 for (let j = 0; j < w; j++) {
   for (let i = 0; i < h; i++) {
-    const prev = m[i - 1]?.[j] ?? 0;
-    m[i][j] += prev;
+    m[i + 1][j] += m[i][j];
   }
 }
-const q = Number(getLine());
-for (let i = 0; i < q; i++) {
-  const [a, b, c, d] = getLine()
-    .split(" ")
-    .map((x) => Number(x) - 1);
-  const total = m[c][d];
-  const left = m[c][b - 1] ?? 0;
-  const up = m[a - 1]?.[d] ?? 0;
-  const corner = m[a - 1]?.[b - 1] ?? 0;
-  console.log(total - left - up + corner);
+
+for (let i = 0; i < h; i++) {
+  console.log(m[i].slice(0, w).join(" "));
 }
