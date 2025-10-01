@@ -12,28 +12,32 @@ const n = Number(getLine());
 const m: number[][] = Array(MAX + 2)
   .fill(0)
   .map(() => Array(MAX + 2).fill(0));
+
 for (let i = 0; i < n; i++) {
-  const [x, y] = getLine().split(" ").map(Number);
-  m[y][x]++;
+  const [x1, y1, x2, y2] = getLine()
+    .split(" ")
+    .map(Number)
+    .map((v) => v + 1);
+  m[y1][x1] += 1;
+  m[y2][x2] += 1;
+  m[y1][x2] -= 1;
+  m[y2][x1] -= 1;
 }
+
 for (let i = 1; i <= MAX; i++) {
   for (let j = 1; j <= MAX; j++) {
-    const prev = m[i][j - 1];
-    m[i][j] += prev;
+    m[i][j + 1] += m[i][j];
   }
 }
+
 for (let j = 1; j <= MAX; j++) {
   for (let i = 1; i <= MAX; i++) {
-    const prev = m[i - 1][j];
-    m[i][j] += prev;
+    m[i + 1][j] += m[i][j];
   }
 }
-const q = Number(getLine());
-for (let i = 0; i < q; i++) {
-  const [a, b, c, d] = getLine().split(" ").map(Number);
-  const total = m[d][c];
-  const left = m[d][a - 1];
-  const up = m[b - 1][c];
-  const corner = m[b - 1][a - 1];
-  console.log(total - left - up + corner);
+
+let count = 0;
+for (let i = 1; i <= MAX; i++) {
+  count += m[i].filter((x) => x > 0).length;
 }
+console.log(count);
