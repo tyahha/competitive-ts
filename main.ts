@@ -7,37 +7,24 @@ const getLine = (() => {
   return () => lines[idx++];
 })();
 
-const MAX = 1500;
-const n = Number(getLine());
-const m: number[][] = Array(MAX + 2)
-  .fill(0)
-  .map(() => Array(MAX + 2).fill(0));
-
-for (let i = 0; i < n; i++) {
-  const [x1, y1, x2, y2] = getLine()
-    .split(" ")
-    .map(Number)
-    .map((v) => v + 1);
-  m[y1][x1] += 1;
-  m[y2][x2] += 1;
-  m[y1][x2] -= 1;
-  m[y2][x1] -= 1;
-}
-
-for (let i = 1; i <= MAX; i++) {
-  for (let j = 1; j <= MAX; j++) {
-    m[i][j + 1] += m[i][j];
+const [_, x] = getLine().split(" ").map(Number);
+const aa = getLine().split(" ").map(Number);
+let cur = Math.floor(aa.length / 2);
+let left = 0;
+let right = aa.length - 1;
+while (true) {
+  if (aa[cur] < x) {
+    left = cur + 1;
+    cur = Math.floor((left + right) / 2);
+  } else if (aa[cur] > x) {
+    right = cur - 1;
+    cur = Math.floor((left + right) / 2);
+  } else {
+    console.log(cur + 1);
+    break;
+  }
+  if (left > right) {
+    console.log(-1);
+    break;
   }
 }
-
-for (let j = 1; j <= MAX; j++) {
-  for (let i = 1; i <= MAX; i++) {
-    m[i + 1][j] += m[i][j];
-  }
-}
-
-let count = 0;
-for (let i = 1; i <= MAX; i++) {
-  count += m[i].filter((x) => x > 0).length;
-}
-console.log(count);
